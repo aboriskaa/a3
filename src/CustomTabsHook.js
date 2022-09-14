@@ -1,10 +1,9 @@
-import React, { useState } from "react";
-import { AppBar, Tabs, Tab, Grid, Button } from "@material-ui/core";
+import { AppBar, Button, Grid, Tab, Tabs } from "@material-ui/core";
 import Add from "@material-ui/icons/Add";
 import Close from "@material-ui/icons/Close";
-import TextField from '@material-ui/core/TextField';
 import { makeStyles } from "@material-ui/styles";
-import Box from '@material-ui/core/Box';
+import React, { useState } from "react";
+import TabPanel from "./TabPanel";
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -37,8 +36,7 @@ const CustomTabsHook = () => {
 
 
     const handleInputChange = (event) => {
-
-        setEditInput((prevRes) => {
+        setEditInput(() => {
             let idx = editInput.findIndex((element) => +element.id === +event.currentTarget.id)
             if (idx !== -1) {
                 let arr = [];
@@ -50,7 +48,7 @@ const CustomTabsHook = () => {
     }
 
     const handleTabChange = (event, value) => {
-        setTabValue((prevRes) => value);
+        setTabValue(() => value);
     };
 
     const addTab = () => {
@@ -63,7 +61,6 @@ const CustomTabsHook = () => {
 
     const deleteTab = e => {
         e.stopPropagation();
-
         if (tabList.length === 1) {
             return;
         }
@@ -76,7 +73,6 @@ const CustomTabsHook = () => {
             }
             return value.id !== tabId;
         });
-
         let curValue = parseInt(tabValue);
         if (curValue === tabId) {
             if (tabIDIndex === 0) {
@@ -93,27 +89,6 @@ const CustomTabsHook = () => {
             return arr
         });
     };
-
-
-    function TabPanel(props) {
-        const { children, value, index, ...other } = props;
-
-        return (
-            <div
-                role="tabpanel"
-                hidden={value !== index}
-                id={`wrapped-tabpanel-${index}`}
-                aria-labelledby={`wrapped-tab-${index}`}
-                {...other}
-            >
-                {value === index && (
-                    <Box p={3}>
-                        {children}
-                    </Box>
-                )}
-            </div>
-        );
-    }
 
     return (
         <>
@@ -148,14 +123,13 @@ const CustomTabsHook = () => {
             </AppBar>
 
             {tabList.map(tab => (
-                <TabPanel key={tab.key.toString()} value={tabValue} index={tab.id} className={classes.appBar}>
-                    <TextField
-                        id={tab.id.toString()}
-                        defaultValue={editInput.find(text => +text.id === +tab.id).text}
-                        label={`От Tab-а ${tab.id} ой формы`}
-                        onChange={handleInputChange}
-                    />
-                </TabPanel>
+                <TabPanel
+                    key={tab.key.toString()}
+                    value={tabValue}
+                    index={tab.id}
+                    editInput={editInput}
+                    handleInputChange={handleInputChange}
+                />
             ))}
 
         </>

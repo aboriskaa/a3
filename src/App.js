@@ -1,6 +1,6 @@
 import React from "react";
 import "./styles.css";
-import CustomTabsHook from "./AddAndDeleteTab";
+import CustomTabsHook from "./CustomTabsHook";
 
 function App() {
   return (
