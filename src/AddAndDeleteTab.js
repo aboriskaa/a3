@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { withStyles, AppBar, Tabs, Tab, Grid, Button } from "@material-ui/core";
+import { AppBar, Tabs, Tab, Grid, Button } from "@material-ui/core";
 import Add from "@material-ui/icons/Add";
 import Close from "@material-ui/icons/Close";
 import TextField from '@material-ui/core/TextField';
@@ -27,6 +27,8 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const CustomTabsHook = () => {
+
+    const NUMBER_OF_TABS = 5;
     const classes = useStyles();
 
     const [tabList, setTabList] = useState([{ key: 0, id: 0 }]);
@@ -34,14 +36,16 @@ const CustomTabsHook = () => {
     const [editInput, setEditInput] = useState([{ id: 0, text: '' }]);
 
 
-    const handleInputChange = (e) => {
+    const handleInputChange = (event) => {
+
         setEditInput((prevRes) => {
-            if (editInput[+e.currentTarget.id]) {
+            let idx = editInput.findIndex((element) => +element.id === +event.currentTarget.id)
+            if (idx !== -1) {
                 let arr = [];
                 arr = editInput;
-                arr[+e.currentTarget.id].text = e.currentTarget.value
+                arr[+idx].text = event.target.value
                 return arr
-            }
+            } else return [...editInput, { id: +event.currentTarget.id, text: '' }]
         })
     }
 
@@ -51,8 +55,10 @@ const CustomTabsHook = () => {
 
     const addTab = () => {
         let id = tabList[tabList.length - 1].id + 1;
-        setEditInput((prevRes) => [...editInput, { id: id, text: '' }]);
-        setTabList((prevRes) => [...tabList, { key: id, id: id }]);
+        if (tabList.length < NUMBER_OF_TABS) {
+            setEditInput(() => [...editInput, { id: id, text: '' }]);
+            setTabList(() => [...tabList, { key: id, id: id }]);
+        }
     };
 
     const deleteTab = e => {
@@ -79,9 +85,9 @@ const CustomTabsHook = () => {
                 curValue = tabList[tabIDIndex - 1].id;
             }
         }
-        setTabValue((prevRes) => curValue);
-        setTabList((prevRes) => tabs);
-        setEditInput((prevRes) => {
+        setTabValue(() => curValue);
+        setTabList(() => tabs);
+        setEditInput(() => {
             let arr = [];
             arr = editInput.filter((e) => e.id !== tabId)
             return arr
@@ -132,9 +138,11 @@ const CustomTabsHook = () => {
                         </Tabs>
                     </Grid>
                     <Grid item xl={1} lg={1} md={1} sm={1} xs={1}>
-                        <Button variant="outlined" onClick={addTab}>
-                            <Add />
-                        </Button>
+                        {(tabList.length < NUMBER_OF_TABS) &&
+                            <Button variant="outlined" onClick={addTab}>
+                                <Add />
+                            </Button>
+                        }
                     </Grid>
                 </Grid>
             </AppBar>
@@ -143,8 +151,8 @@ const CustomTabsHook = () => {
                 <TabPanel key={tab.key.toString()} value={tabValue} index={tab.id} className={classes.appBar}>
                     <TextField
                         id={tab.id.toString()}
-                        defaultValue={editInput[tab.id].text}
-                        label={`От Tab-а ${tabValue} ой формы`}
+                        defaultValue={editInput.find(text => +text.id === +tab.id).text}
+                        label={`От Tab-а ${tab.id} ой формы`}
                         onChange={handleInputChange}
                     />
                 </TabPanel>
